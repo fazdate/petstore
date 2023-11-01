@@ -3,7 +3,7 @@ name: CI/CD to Azure Container Registry
 env:
   AZURE_CONTAINER_REGISTRY: fazdateacr.azurecr.io
   AZURE_CONTAINER_REGISTRY_USERNAME: fazdateacr
-  IMAGE_NAME: petStore
+  IMAGE_NAME: petstore
 
 on:
   push:
