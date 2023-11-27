@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -121,6 +120,10 @@ public class PetStoreServiceImpl implements PetStoreService {
 	public Collection<Product> getProducts(String category, List<Tag> tags) {
 		List<Product> products = new ArrayList<>();
 
+		this.sessionUser.getTelemetryClient().trackEvent(
+				String.format("PetStoreApp received request from user: %s, session: %s", this.sessionUser.getName(), this.sessionUser.getSessionId())
+		);
+
 		try {
 			Consumer<HttpHeaders> consumer = it -> it.addAll(this.webRequest.getHeaders());
 			products = this.productServiceWebClient.get()
@@ -148,6 +151,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 				products = products.stream().filter(product -> category.equals(product.getCategory().getName())
 						&& product.getTags().toString().contains("small")).collect(Collectors.toList());
 			}
+			logger.info("Number of returned products: {}", products.size());
 			return products;
 		} catch (
 
