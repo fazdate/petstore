@@ -35,10 +35,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PetStoreServiceImpl implements PetStoreService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(PetStoreServiceImpl.class);
-	private static final String CACHE_CONTROL = "Cache-Control";
-	private static final String CONTENT_TYPE = "Content-Type";
-	private static final String NO_CACHE = "no-cache";
+	private static final Logger logger = LoggerFactory.getLogger(PetStoreServiceImpl.class);
 
 	private final User sessionUser;
 	private final ContainerEnvironment containerEnvironment;
@@ -47,7 +44,6 @@ public class PetStoreServiceImpl implements PetStoreService {
 	private WebClient petServiceWebClient = null;
 	private WebClient productServiceWebClient = null;
 	private WebClient orderServiceWebClient = null;
-	private WebClient orderItemsReserverWebClient = null;
 
 	public PetStoreServiceImpl(User sessionUser, ContainerEnvironment containerEnvironment, WebRequest webRequest) {
 		this.sessionUser = sessionUser;
@@ -57,10 +53,13 @@ public class PetStoreServiceImpl implements PetStoreService {
 
 	@PostConstruct
 	public void initialize() {
-		this.petServiceWebClient = WebClient.builder().baseUrl(this.containerEnvironment.getPetStorePetServiceURL()).build();
-		this.productServiceWebClient = WebClient.builder().baseUrl(this.containerEnvironment.getPetStoreProductServiceURL()).build();
-		this.orderServiceWebClient = WebClient.builder().baseUrl(this.containerEnvironment.getPetStoreOrderServiceURL()).build();
-		this.orderItemsReserverWebClient = WebClient.builder().baseUrl(this.containerEnvironment.getOrderItemsReserverURL()).build();
+		this.petServiceWebClient = WebClient.builder()
+				.baseUrl(this.containerEnvironment.getPetStorePetServiceURL())
+				.build();
+		this.productServiceWebClient = WebClient.builder()
+				.baseUrl(this.containerEnvironment.getPetStoreProductServiceURL()).build();
+		this.orderServiceWebClient = WebClient.builder().baseUrl(this.containerEnvironment.getPetStoreOrderServiceURL())
+				.build();
 	}
 
 	@Override
@@ -76,8 +75,8 @@ public class PetStoreServiceImpl implements PetStoreService {
 			pets = this.petServiceWebClient.get().uri("petstorepetservice/v2/pet/findByStatus?status=available")
 					.accept(MediaType.APPLICATION_JSON)
 					.headers(consumer)
-					.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-					.header(CACHE_CONTROL, NO_CACHE)
+					.header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+					.header("Cache-Control", "no-cache")
 					.retrieve()
 					.bodyToMono(new ParameterizedTypeReference<List<Pet>>() {
 					}).block();
@@ -131,8 +130,8 @@ public class PetStoreServiceImpl implements PetStoreService {
 					.uri("petstoreproductservice/v2/product/findByStatus?status=available")
 					.accept(MediaType.APPLICATION_JSON)
 					.headers(consumer)
-					.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-					.header(CACHE_CONTROL, NO_CACHE)
+					.header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+					.header("Cache-Control", "no-cache")
 					.retrieve()
 					.bodyToMono(new ParameterizedTypeReference<List<Product>>() {
 					}).block();
@@ -152,7 +151,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 				products = products.stream().filter(product -> category.equals(product.getCategory().getName())
 						&& product.getTags().toString().contains("small")).collect(Collectors.toList());
 			}
-			LOGGER.info("Number of returned products: {}", products.size());
+			logger.info("Number of returned products: {}", products.size());
 			return products;
 		} catch (
 
@@ -196,7 +195,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 			if (completeOrder) {
 				updatedOrder.setComplete(true);
 			} else {
-				List<Product> products = new ArrayList<>();
+				List<Product> products = new ArrayList<Product>();
 				Product product = new Product();
 				product.setId(Long.valueOf(productId));
 				product.setQuantity(quantity);
@@ -210,28 +209,17 @@ public class PetStoreServiceImpl implements PetStoreService {
 
 			Consumer<HttpHeaders> consumer = it -> it.addAll(this.webRequest.getHeaders());
 
-			this.orderItemsReserverWebClient.post().uri("api/OrderItemsReserver")
+			updatedOrder = this.orderServiceWebClient.post().uri("petstoreorderservice/v2/store/order")
 					.body(BodyInserters.fromPublisher(Mono.just(orderJSON), String.class))
 					.accept(MediaType.APPLICATION_JSON)
 					.headers(consumer)
-					.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-					.header(CACHE_CONTROL, NO_CACHE)
+					.header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+					.header("Cache-Control", "no-cache")
 					.retrieve()
 					.bodyToMono(Order.class).block();
 
-			LOGGER.info("Reserving order by sessionId {}", sessionUser.getSessionId());
-			String response = orderItemsReserverWebClient.post()
-					.uri(uriBuilder -> uriBuilder.path("api/OrderItemsReserver").build())
-					.body(BodyInserters.fromPublisher(Mono.just(orderJSON), String.class))
-					.accept(MediaType.APPLICATION_JSON)
-					.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-					.header(CACHE_CONTROL, NO_CACHE)
-					.retrieve()
-					.bodyToMono(String.class).block();
-			LOGGER.info(response);
-
 		} catch (Exception e) {
-			LOGGER.warn(e.getMessage());
+			logger.warn(e.getMessage());
 		}
 	}
 
@@ -250,13 +238,13 @@ public class PetStoreServiceImpl implements PetStoreService {
 					.uri(uriBuilder -> uriBuilder.path("petstoreorderservice/v2/store/order/{orderId}").build(orderId))
 					.accept(MediaType.APPLICATION_JSON)
 					.headers(consumer)
-					.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-					.header(CACHE_CONTROL, NO_CACHE)
+					.header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+					.header("Cache-Control", "no-cache")
 					.retrieve()
 					.bodyToMono(new ParameterizedTypeReference<Order>() {
 					}).block();
 		} catch (Exception e) {
-			LOGGER.warn(e.getMessage());
+			logger.warn(e.getMessage());
 		}
 		return order;
 	}
