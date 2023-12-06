@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.chtrembl.petstore.product.model.ProductRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.chtrembl.petstore.product.model.DataPreload;
 import com.chtrembl.petstore.product.model.ModelApiResponse;
 import com.chtrembl.petstore.product.model.Product;
 
@@ -47,12 +47,8 @@ public interface ProductApi {
 
 	// wired in for the scenario the interface declarations need access to scoped
 	// beans, all implementation should occur in Controller tho
-	public DataPreload getBeanToBeAutowired();
-
-	// wired in for the scenario the interface declarations need access to scoped
-	// beans, all implementation should occur in Controller tho
-	default List<Product> getPreloadedProducts() {
-		return getBeanToBeAutowired().getProducts();
+	default List<Product> getPreloadedProducts(ProductRepository repository) {
+		return repository.findAll();
 	}
 
 	@ApiOperation(value = "Add a new product to the store", nickname = "addProduct", notes = "", authorizations = {
