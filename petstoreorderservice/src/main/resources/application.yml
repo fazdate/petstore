@@ -17,6 +17,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  cosmos:
+    account_endpoint: ${COSMOS_ACCOUNT_ENDPOINT}
+    account_key: ${COSMOS_ACCOUNT_KEY}
 
 management:
   endpoints:

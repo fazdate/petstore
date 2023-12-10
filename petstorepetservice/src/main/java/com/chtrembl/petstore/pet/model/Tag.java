@@ -2,12 +2,10 @@ package com.chtrembl.petstore.pet.model;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+
+import javax.persistence.*;
 
 /**
  * Tag
@@ -15,11 +13,17 @@ import javax.validation.constraints.*;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2021-12-20T15:31:39.272-05:00")
 
+@Entity
+@Table(name="tag")
 public class Tag   {
   @JsonProperty("id")
+  @Id
+  @Column(name="tag_id")
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id = null;
 
   @JsonProperty("name")
+  @Column(name="tag_name")
   private String name = null;
 
   public Tag id(Long id) {

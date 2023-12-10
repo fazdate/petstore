@@ -8,17 +8,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.*;
+
 /**
  * Tag
  */
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2021-12-20T15:31:39.272-05:00")
 
+@Entity
+@Table(name="tag")
 public class Tag {
 	@JsonProperty("id")
+	@Id
+	@Column(name="tag_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id = null;
 
 	@JsonProperty("name")
+	@Column(name="tag_name")
 	private String name = null;
 
 	public Tag id(Long id) {

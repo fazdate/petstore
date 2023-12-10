@@ -3,21 +3,15 @@ package com.chtrembl.petstore.pet.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@EnableConfigurationProperties
-@ConfigurationProperties("data")
+@Getter
+@Setter
+@Component
 public class DataPreload {
+
 	private List<Pet> pets = new ArrayList<>();
 
-	public List<Pet> getPets() {
-		return pets;
-	}
-
-	public void setPets(List<Pet> pets) {
-		this.pets = pets;
-	}
 }

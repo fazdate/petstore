@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -21,63 +20,38 @@ import io.swagger.annotations.ApiModelProperty;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2021-12-20T15:31:39.272-05:00")
 
+@Entity
+@Table(name="product")
 public class Product {
 	@JsonProperty("id")
+	@Id
+	@Column(name="product_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@JsonProperty("category")
+	@ManyToOne
+	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
 
 	@JsonProperty("name")
+	@Column(name="product_name")
 	private String name;
 
 	@JsonProperty("photoURL")
 	@Valid
+	@Column(name="product_photoURL")
 	private String photoURL;
 
 	@JsonProperty("tags")
 	@Valid
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "product_tag", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	private List<Tag> tags = null;
 
-	/**
-	 * pet status in the store
-	 */
-	public enum StatusEnum {
-		AVAILABLE("available"),
-
-		PENDING("pending"),
-
-		SOLD("sold");
-
-		private String value;
-
-		StatusEnum(String value) {
-			this.value = value;
-		}
-
-		@JsonValue
-		public String getValue() {
-			return value;
-		}
-
-		@Override
-		public String toString() {
-			return String.valueOf(value);
-		}
-
-		@JsonCreator
-		public static StatusEnum fromValue(String value) {
-			for (StatusEnum b : StatusEnum.values()) {
-				if (b.value.equals(value)) {
-					return b;
-				}
-			}
-			throw new IllegalArgumentException("Unexpected value '" + value + "'");
-		}
-	}
-
 	@JsonProperty("status")
-	private StatusEnum status;
+	@Column(name="status")
+	private String status;
 
 	public Product id(Long id) {
 		this.id = id;
@@ -188,7 +162,7 @@ public class Product {
 		this.tags = tags;
 	}
 
-	public Product status(StatusEnum status) {
+	public Product status(String status) {
 		this.status = status;
 		return this;
 	}
@@ -200,11 +174,11 @@ public class Product {
 	 */
 	@ApiModelProperty(value = "pet status in the store")
 
-	public StatusEnum getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(StatusEnum status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
