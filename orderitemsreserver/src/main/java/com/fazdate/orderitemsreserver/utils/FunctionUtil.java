@@ -14,8 +14,10 @@ public final class FunctionUtil {
     private FunctionUtil() {
     }
 
-    private static CloudStorageAccount getStorageAccount() throws URISyntaxException, InvalidKeyException {
-        return CloudStorageAccount.parse(System.getenv("AZURE_STORAGE"));
+    public static void uploadTextToBlob(String content, String blobReference) throws Exception {
+        CloudBlobContainer container = getBlobContainer(getStorageAccount(), "orders");
+        CloudBlockBlob blockBlob = container.getBlockBlobReference(blobReference);
+        blockBlob.uploadText(content);
     }
 
     private static CloudBlobContainer getBlobContainer(CloudStorageAccount storageAccount, String containerName) throws URISyntaxException, StorageException {
@@ -23,9 +25,8 @@ public final class FunctionUtil {
         return client.getContainerReference(containerName);
     }
 
-    public static void uploadTextToBlob(String content, String blobReference) throws Exception {
-        CloudBlobContainer container = getBlobContainer(getStorageAccount(), "orders");
-        CloudBlockBlob blockBlob = container.getBlockBlobReference(blobReference);
-        blockBlob.uploadText(content);
+    private static CloudStorageAccount getStorageAccount() throws URISyntaxException, InvalidKeyException {
+        return CloudStorageAccount.parse(System.getenv("AZURE_STORAGE"));
     }
+
 }

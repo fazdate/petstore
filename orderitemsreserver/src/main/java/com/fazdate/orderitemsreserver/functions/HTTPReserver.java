@@ -29,7 +29,7 @@ public class HTTPReserver {
     }
 
     private static HttpResponseMessage handleResponse(HttpRequestMessage<Optional<String>> request, String message, HttpStatus httpStatus) {
-        return request.createResponseBuilder(httpStatus).body(message).build();
+        return request.createResponseBuilder(httpStatus).header("Content-Type", "application/json").body(message).build();
     }
 
 }
