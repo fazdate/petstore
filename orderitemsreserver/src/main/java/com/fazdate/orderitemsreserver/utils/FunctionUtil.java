@@ -14,7 +14,7 @@ public final class FunctionUtil {
     private FunctionUtil() {
     }
 
-    public static void uploadTextToBlob(String content, String blobReference) throws Exception {
+    public static void uploadTextToBlob(String blobReference, String content) throws Exception {
         CloudBlobContainer container = getBlobContainer(getStorageAccount(), "orders");
         CloudBlockBlob blockBlob = container.getBlockBlobReference(blobReference);
         blockBlob.uploadText(content);

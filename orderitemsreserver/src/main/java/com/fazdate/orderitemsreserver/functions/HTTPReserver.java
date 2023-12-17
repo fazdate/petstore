@@ -20,7 +20,7 @@ public class HTTPReserver {
         body = body.substring(body.indexOf('[') + 1, body.lastIndexOf(']')); // removing "Optional" and the square brackets
 
         try {
-            FunctionUtil.uploadTextToBlob(body, "order.json");
+            FunctionUtil.uploadTextToBlob("order.json", body);
         } catch (Exception e) {
             return handleResponse(request, "There was an exception, while trying to upload the file to the container\n" + e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
