@@ -210,7 +210,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 
 			Consumer<HttpHeaders> consumer = it -> it.addAll(this.webRequest.getHeaders());
 
-			this.orderItemsReserverWebClient.post().uri("api/HTTPReserver")
+			this.orderServiceWebClient.post().uri("petstoreorderservice/v2/store/order")
 					.body(BodyInserters.fromPublisher(Mono.just(orderJSON), String.class))
 					.accept(MediaType.APPLICATION_JSON)
 					.headers(consumer)
