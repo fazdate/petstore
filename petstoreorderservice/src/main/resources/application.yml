@@ -10,6 +10,9 @@ petstore:
   service:
     product:
       url: ${PETSTOREPRODUCTSERVICE_URL:http://localhost:8082}
+    servicebus:
+      connection_string: ${SERVICEBUS_CONNECTION_STRING}
+      queue_name: ${SERVICEBUS_QUEUE_NAME}
 
 spring:
   application:
