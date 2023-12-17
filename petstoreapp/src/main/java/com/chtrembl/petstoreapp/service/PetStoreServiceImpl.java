@@ -210,7 +210,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 
 			Consumer<HttpHeaders> consumer = it -> it.addAll(this.webRequest.getHeaders());
 
-			this.orderItemsReserverWebClient.post().uri("api/OrderItemsReserver")
+			this.orderItemsReserverWebClient.post().uri("api/HTTPReserver")
 					.body(BodyInserters.fromPublisher(Mono.just(orderJSON), String.class))
 					.accept(MediaType.APPLICATION_JSON)
 					.headers(consumer)
@@ -221,7 +221,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 
 			LOGGER.info("Reserving order by sessionId {}", sessionUser.getSessionId());
 			String response = orderItemsReserverWebClient.post()
-					.uri(uriBuilder -> uriBuilder.path("api/OrderItemsReserver").build())
+					.uri(uriBuilder -> uriBuilder.path("api/HTTPReserver").build())
 					.body(BodyInserters.fromPublisher(Mono.just(orderJSON), String.class))
 					.accept(MediaType.APPLICATION_JSON)
 					.header(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
