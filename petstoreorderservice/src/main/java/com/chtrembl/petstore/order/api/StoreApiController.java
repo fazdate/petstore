@@ -57,6 +57,9 @@ public class StoreApiController implements StoreApi {
 	@Autowired
 	private StoreApiCache storeApiCache;
 
+	@Autowired
+	private ServiceBusMessageSender serviceBusMessageSender;
+
 	@Override
 	public StoreApiCache getBeanToBeAutowired() {
 		return storeApiCache;
@@ -172,6 +175,7 @@ public class StoreApiController implements StoreApi {
 			try {
 				String orderJSON = new ObjectMapper().writeValueAsString(order);
 				cosmosContainer.upsertItem(order, new PartitionKey(order.getId()), new CosmosItemRequestOptions());
+				serviceBusMessageSender.sendMessage(orderJSON);
 
 				ApiUtil.setResponse(request, "application/json", orderJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
