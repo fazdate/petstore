@@ -15,16 +15,15 @@ public class ServiceBusReserver {
         context.getLogger().info("OrderItemsReserver is processing a request");
 
         JSONObject jsonObject = new JSONObject(message);
+        String userId = jsonObject.getString("id") + ".json";
 
-        if (jsonObject.has("id")) {
+       if (jsonObject.has("id")) {
             try {
-                String blobReference = jsonObject.getString("id") + ".json";
-                FunctionUtil.uploadTextToBlob(blobReference, message);
+                FunctionUtil.uploadTextToBlob(userId, message);
                 context.getLogger().info("Message was uploaded successfuly");
             } catch (Exception e) {
-                throw new RuntimeException(FAILED_TO_UPLOAD_MESSAGE, e);
+                FunctionUtil.handleBlobUploadException(userId, message);
             }
-        }
+       }
     }
-
 }
